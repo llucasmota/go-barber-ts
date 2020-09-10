@@ -17,10 +17,15 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 const Input: React.FC<InputProps> = ({ name, icon: Icon, ...rest }) => {
   const { fieldName, defaultValue, error, registerField } = useField(name);
   const [isFocused, setIsFocused] = useState(false);
-  const inputRef = useRef(null);
+  const [isFiled, setIsFilled] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleInputBlur = useCallback(() => {
     setIsFocused(false);
+    /**
+     * Avaliando se está preenchido
+     */
+    setIsFilled(!!inputRef.current?.value);
   }, []);
 
   useEffect(() => {
@@ -31,7 +36,7 @@ const Input: React.FC<InputProps> = ({ name, icon: Icon, ...rest }) => {
     });
   }, [fieldName, registerField]);
   return (
-    <Container isFocused={isFocused}>
+    <Container isFilled={isFiled} isFocused={isFocused}>
       {Icon && <Icon size={20} />}
       <input
         ref={inputRef}

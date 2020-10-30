@@ -7,7 +7,7 @@ interface SigninCredentials {
 }
 
 interface AuthContextData {
-  user: object;
+  name: string;
   signIn(credentials: SigninCredentials): Promise<void>;
 }
 
@@ -20,28 +20,19 @@ export const AuthContext = createContext<AuthContextData>(
 );
 
 export const AuthProvider: React.FC = ({ children }) => {
-  const [data, setData] = useState<AuthState>(() => {
-    const token = localStorage.getItem('@GoBarber:token');
-    const user = localStorage.getItem('@GoBarber:user');
-    if (token && user) {
-      return { token, user: JSON.parse(user) };
-    }
-    return {} as AuthState;
-  });
-
-  const signIn = useCallback(async ({ email, password }): Promise<void> => {
-    const response = await api.post('sessions', {
+  /**
+   * Função que realizará a autenticação
+   */
+  const signIn = useCallback(async ({ email, password }) => {
+    const response = await api.post('/sessions', {
       email,
       password,
     });
-    const { token, user } = response.data;
-    localStorage.setItem('@GoBarber:token', token);
-    localStorage.setItem('@GoBarber:user', JSON.stringify(user));
 
-    setData({ token, user });
+    console.log(response.data);
   }, []);
   return (
-    <AuthContext.Provider value={{ user: data.user, signIn }}>
+    <AuthContext.Provider value={{ name: 'Lucas', signIn }}>
       {children}
     </AuthContext.Provider>
   );

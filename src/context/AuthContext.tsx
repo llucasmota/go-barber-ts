@@ -7,7 +7,7 @@ interface SigninCredentials {
 }
 
 interface AuthContextData {
-  name: string;
+  user: object;
   signIn(credentials: SigninCredentials): Promise<void>;
 }
 
@@ -21,6 +21,18 @@ export const AuthContext = createContext<AuthContextData>(
 
 export const AuthProvider: React.FC = ({ children }) => {
   /**
+   * Verificar se o localStorage está preenchido com os dados, caso sim retorna
+   */
+  const [data, setData] = useState<AuthState>(() => {
+    const user = localStorage.getItem('@goBarber:user');
+    const token = localStorage.getItem('@goBarber:token');
+
+    if (user && token) {
+      return { user: JSON.parse(user), token };
+    }
+    return {} as AuthState;
+  });
+  /**
    * Função que realizará a autenticação
    */
   const signIn = useCallback(async ({ email, password }) => {
@@ -28,11 +40,17 @@ export const AuthProvider: React.FC = ({ children }) => {
       email,
       password,
     });
+    const { token, user } = response.data;
+    /**
+     * Realizo a autenticação e guardo no localStorage o token e o user
+     */
+    localStorage.setItem('@goBarber:token', token);
+    localStorage.setItem('@goBarber:user', JSON.stringify(user));
 
-    console.log(response.data);
+    setData({ user, token });
   }, []);
   return (
-    <AuthContext.Provider value={{ name: 'Lucas', signIn }}>
+    <AuthContext.Provider value={{ user: data.user, signIn }}>
       {children}
     </AuthContext.Provider>
   );

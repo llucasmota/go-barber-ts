@@ -7,7 +7,7 @@ import getValidationErrros from '../../utils/getValidadionErrors';
 import { Container, Content, Background } from './styles';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
-import { AuthContext, useAuth } from '../../context/AuthContext';
+import { AuthContext, useAuth } from '../../hooks/AuthContext';
 
 import logoImg from '../../assets/logo.svg';
 
